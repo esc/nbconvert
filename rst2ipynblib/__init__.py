@@ -85,6 +85,13 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
     def is_ref_error_paragraph(self, p):
         return p == "Unknown interpreted text role \"ref\"."
 
+    def strip_elipsis(self, code):
+        search = '# doctest: +ELLIPSIS'
+        if code.endswith(search):
+            return code[:-len(search)]
+        else:
+            return code
+
     def add_cell(self, cell):
         self.nb.worksheets[0].cells.append(cell)
 
@@ -104,9 +111,11 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
             ipyprompt = IPYPROMPT.match(line)
             # try matching the >>> prompt
             if line.startswith('>>>'):
-                current_cell.append(line.split('>>>')[1][1:])
+                code = line.split('>>>')[1][1:]
+                current_cell.append(self.strip_elipsis(code))
             elif line.startswith('...'):
-                current_cell.append(line.split('...')[1][1:])
+                code = line.split('...')[1][1:]
+                current_cell.append(self.strip_elipsis(code))
             # try matching ipypromt
             elif ipyprompt is not None:
                 current_cell.append(ipyprompt.groupdict()['code'].strip())
