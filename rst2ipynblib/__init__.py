@@ -5,6 +5,7 @@ Simple ipython notebook document tree Writer.
 
 __docformat__ = 'reStructuredText'
 
+import ipython_console_highlighting
 
 import sys
 import os
@@ -119,9 +120,10 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         # that does not exist in docutils
         # looking for a better way to handle this
         # for now filtering such pargraphs from the output
-
         if not self.is_ref_error_paragraph(text):
-            p = nbformat.new_text_cell('markdown', source=text)
+            md = pypandoc.convert(node.rawsource, 'md', format='rst')
+            p = nbformat.new_text_cell('markdown',
+                    source=md)
             self.add_cell(p)
 
     def visit_section(self, node):
