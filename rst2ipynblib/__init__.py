@@ -121,9 +121,10 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         # looking for a better way to handle this
         # for now filtering such pargraphs from the output
         if not self.is_ref_error_paragraph(text):
-            md = pypandoc.convert(node.rawsource, 'md', format='rst')
+            encoded = node.rawsource.encode('utf8')
+            md = pypandoc.convert(encoded, 'md', format='rst')
             p = nbformat.new_text_cell('markdown',
-                    source=md)
+                    source=md.decode('utf8'))
             self.add_cell(p)
 
     def visit_section(self, node):
