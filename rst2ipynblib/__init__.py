@@ -93,8 +93,8 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         self.add_cell(cell)
 
     def add_code_cell(self, lines):
-        c = nbformat.new_code_cell(input='\n'.join(lines))
-        self.add_cell(c)
+        cell = nbformat.new_code_cell(input='\n'.join(lines))
+        self.add_cell(cell)
 
     def visit_literal_block(self, node):
         raw_text = node.astext()
