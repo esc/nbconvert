@@ -97,6 +97,8 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
             # try matching the >>> prompt
             if line.startswith('>>>'):
                 current_cell.append(line.split('>>>')[1][1:])
+            elif line.startswith('...'):
+                current_cell.append(line.split('...')[1][1:])
             # try matching ipypromt
             elif ipyprompt is not None:
                 current_cell.append(ipyprompt.groupdict()['code'].strip())
