@@ -105,6 +105,10 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         self.add_cell(cell)
 
     def visit_literal_block(self, node):
+        if self.list_item_level > 0:
+            self.add_list_cell()
+            self.current_list = []
+            self.list_item_level = 1
         raw_text = node.astext()
         current_cell = []
         for line in raw_text.split('\n'):
@@ -151,15 +155,19 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         self.default_visit(node)
 
     def depart_bullet_list(self, node):
-        self.list_item_level -= 1
+        if self.list_item_level > 0:
+            self.list_item_level -= 1
         if self.list_item_level == 0:
-            self.add_markdown_cell("\n".join(self.current_list))
-            self.current_list = None
+            self.add_list_cell()
         self.default_departure(node)
 
     def add_list_item(self, item):
         self.current_list.append("%s* %s" %
                 ((self.list_item_level - 1) * "    ", item))
+
+    def add_list_cell(self):
+        self.add_markdown_cell("\n".join(self.current_list))
+        self.current_list = None
 
     def visit_list_item(self, node):
         self.default_visit(node)
