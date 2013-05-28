@@ -87,6 +87,11 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
     def add_cell(self, cell):
         self.nb.worksheets[0].cells.append(cell)
 
+    def add_markdown_cell(self, source):
+        cell = nbformat.new_text_cell('markdown',
+                source=source)
+        self.add_cell(cell)
+
     def add_code_cell(self, lines):
         c = nbformat.new_code_cell(input='\n'.join(lines))
         self.add_cell(c)
@@ -126,9 +131,7 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
             md = pypandoc.convert(encoded, 'md', format='rst')
             if self.list_item_level > 0:
                 md = "* " + md
-            p = nbformat.new_text_cell('markdown',
-                    source=md.decode('utf8'))
-            self.add_cell(p)
+            self.add_markdown_cell(md.decode('utf8'))
 
     def visit_list_item(self, node):
         self.list_item_level +=1
