@@ -74,6 +74,7 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         self.context = []
         self.body = []
         self.section_level = 0
+        self.list_item_level = 0
         ws = nbformat.new_worksheet()
         self.nb = nbformat.new_notebook(worksheets=[ws])
 
@@ -123,9 +124,19 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         if not self.is_ref_error_paragraph(text):
             encoded = node.rawsource.encode('utf8')
             md = pypandoc.convert(encoded, 'md', format='rst')
+            if self.list_item_level > 0:
+                md = "* " + md
             p = nbformat.new_text_cell('markdown',
                     source=md.decode('utf8'))
             self.add_cell(p)
+
+    def visit_list_item(self, node):
+        self.list_item_level +=1
+        self.default_visit(node)
+
+    def depart_list_item(self, node):
+        self.list_item_level -=1
+        self.default_departure(node)
 
     def visit_section(self, node):
         self.section_level += 1
