@@ -200,6 +200,11 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
                                       level=heading_level)
         self.add_cell(h)
 
+    def visit_image(self, node):
+        code = ["from IPython.display import Image",
+                "Image(filename='%s')" % node['uri']]
+        self.add_code_cell(code)
+
     def default_visit(self, node):
         node_class = node.__class__.__name__
         #print '*default_visit', node_class
