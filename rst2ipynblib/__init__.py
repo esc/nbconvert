@@ -182,6 +182,9 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
     def visit_list_item(self, node):
         self.default_visit(node)
 
+    def visit_field_name(self, node):
+        self.visit_paragraph(node)
+
     def depart_list_item(self, node):
         self.default_departure(node)
 
