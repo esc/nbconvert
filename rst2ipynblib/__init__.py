@@ -116,23 +116,27 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
             self.current_list = []
             self.list_item_level = 1
         raw_text = node.astext()
+        language = node['language'] if node.has_key('language') else None
         current_cell = []
-        for line in raw_text.split('\n'):
-            ipyprompt = IPYPROMPT.match(line)
-            # try matching the >>> prompt
-            if line.startswith('>>>'):
-                code = line.split('>>>')[1][1:]
-                current_cell.append(self.strip_elipsis(code))
-            elif line.startswith('...'):
-                code = line.split('...')[1][1:]
-                current_cell.append(self.strip_elipsis(code))
-            # try matching ipypromt
-            elif ipyprompt is not None:
-                current_cell.append(ipyprompt.groupdict()['code'].strip())
-            # some kind of output
-            elif current_cell:
-                self.add_code_cell(current_cell)
-                current_cell = []
+        if language is not None and language in ['pycon', 'ipython']:
+            for line in raw_text.split('\n'):
+                ipyprompt = IPYPROMPT.match(line)
+                # try matching the >>> prompt
+                if line.startswith('>>>'):
+                    code = line.split('>>>')[1][1:]
+                    current_cell.append(self.strip_elipsis(code))
+                elif line.startswith('...'):
+                    code = line.split('...')[1][1:]
+                    current_cell.append(self.strip_elipsis(code))
+                # try matching ipypromt
+                elif ipyprompt is not None:
+                    current_cell.append(ipyprompt.groupdict()['code'].strip())
+                # some kind of output
+                elif current_cell:
+                    self.add_code_cell(current_cell)
+                    current_cell = []
+        else:
+            self.add_raw_cell(raw_text)
         # if the last line was not output
         if current_cell:
             self.add_code_cell(current_cell)
