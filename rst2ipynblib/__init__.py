@@ -86,9 +86,10 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         return p == "Unknown interpreted text role \"ref\"."
 
     def strip_elipsis(self, code):
-        search = '# doctest: +ELLIPSIS'
-        if code.endswith(search):
-            return code[:-len(search)]
+        search = ['# doctest: +ELLIPSIS', '# doctest: +SKIP']
+        for s in search:
+            if code.endswith(s):
+                return code[:-len(s)]
         else:
             return code
 
