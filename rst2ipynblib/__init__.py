@@ -105,6 +105,11 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
         cell = nbformat.new_code_cell(input='\n'.join(lines))
         self.add_cell(cell)
 
+    def add_raw_cell(self, source):
+        cell = nbformat.new_text_cell('raw',
+                source=source)
+        self.add_cell(cell)
+
     def visit_literal_block(self, node):
         if self.list_item_level > 0:
             self.add_list_cell()
