@@ -135,6 +135,8 @@ class IPYNBTranslator(nodes.GenericNodeVisitor):
                 elif current_cell:
                     self.add_code_cell(current_cell)
                     current_cell = []
+        elif language == 'python':
+            self.add_code_cell(raw_text.split('\n'))
         else:
             self.add_raw_cell(raw_text)
         # if the last line was not output
